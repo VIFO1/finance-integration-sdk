@@ -31,5 +31,5 @@ return array(
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/lib/Doctrine/Deprecations'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
-    'ApiTransferMoneyOrderPayout\\Services\\' => array($baseDir . '/src'),
+    'ApiTransferMoneyOrderPayout\\Services\\' => array($baseDir . '/src/Services'),
 );

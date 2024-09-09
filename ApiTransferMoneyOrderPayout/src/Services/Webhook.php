@@ -4,29 +4,34 @@ namespace ApiTransferMoneyOrderPayout\Services;
 
 class Webhook
 {
-    private function validate($secretKey, $timestamp, $body)
+    /**
+     * Validate the input parameters for a request.
+     *
+     * @param string $secretKey The secret key used for validation.
+     * @param string $timestamp The timestamp of the request.
+     * @param mixed $body The body of the request, can be of any type.
+     * 
+     * @return string|null Returns an error message if validation fails, or null if validation passes.
+     */
+    private function validate(string $secretKey, string $timestamp, $body): ?string
     {
-        if (empty($secretKey) || !is_string($secretKey)) {
-            return ['error' => 'Invalid secret key'];
+        if (empty($secretKey)) {
+            return 'Invalid secret key';
         }
 
         if (empty($timestamp)) {
-            return ['error' => 'Invalid timestamp'];
+            return 'Invalid timestamp';
         }
 
-        if (empty($body) || !is_array($body)) {
-            return ['error' => 'Invalid body'];
+        if (empty($body)) {
+            return 'Invalid body';
         }
 
-        return true;
+        return null;
     }
 
     private function createSignature($body, $secretKey, $timestamp)
     {
-        if (is_object($body)) {
-            $body = (array) $body;
-        }
-        
         ksort($body);
         $payload = json_encode($body);
         $signatureString = $timestamp . $payload;
@@ -43,6 +48,10 @@ class Webhook
         }
 
         $validationResult = $this->validate($secretKey, $timestamp, $data);
+
+        if ($validationResult) {
+            return ['error' => $validationResult];
+        }
 
         if ($validationResult !== true) {
             return $validationResult;

@@ -12,30 +12,36 @@ class VifoApproveTransferMoney
         $this->headers = $headers;
         $this->sendRequest = new VifoSendRequest();
     }
-
-    private function validateApproveTransfersInput($secretKey, $timestamp, $body)
+    /**
+     * Validate input for approving transfers.
+     *
+     * @param string $secretKey The secret key for authentication.
+     * @param string $timestamp The timestamp of the request.
+     * @param array $body The body of the request.
+     * @return string Returns error message if validation fails, otherwise a success message.
+     */
+    private function validateApproveTransfersInput(string $secretKey, string $timestamp, array $body): string
     {
         if (empty($secretKey) || !is_string($secretKey)) {
-            return ['error' => 'Invalid secret key'];
+            return 'Invalid secret key';
         }
 
         if (empty($timestamp)) {
-            return ['error' => 'Invalid timestamp'];
+            return 'Invalid timestamp';
         }
 
         if (empty($body)) {
-            return ['error' => 'Invalid body'];
+            return 'Invalid body';
         }
 
-        return true;
+        return 'Validation passed';
     }
-
     private function createSignature($body, $secretKey, $timestamp)
     {
         if (is_object($body)) {
             $body = (array) $body;
         }
-        
+
         ksort($body);
         $payload = json_encode($body);
         $signatureString = $timestamp . $payload;
@@ -47,8 +53,8 @@ class VifoApproveTransferMoney
     {
         $validation = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
 
-        if ($validation !== true) {
-            return $validation;
+        if ($validation !== 'Validation passed') {
+            return $validation; 
         }
 
         $endpoint = '/v2/finance/confirm';

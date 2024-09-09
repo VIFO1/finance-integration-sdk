@@ -12,29 +12,29 @@ class VifoBank
         $this->headers = $headers;
     }
 
-    public function getBank($body)
+    private function prepareBody($body)
     {
-        $endpoint = '/v2/data/banks/napas';
-
         if (is_object($body)) {
             $body = (array) $body;
         }
-
-        $response = $this->sendRequest->sendRequest('GET', $endpoint, $this->headers, $body);
-        return $response;
+        return $body;
     }
 
+    public function getBank($body)
+    {
+        $endpoint = '/v2/data/banks/napas';
+        $preparedBody = $this->prepareBody($body);
 
+        $response = $this->sendRequest->sendRequest('GET', $endpoint, $this->headers, $preparedBody);
+        return $response;
+    }
 
     public function getBeneficiaryName($body)
     {
         $endpoint = '/v2/finance/napas/receiver';
-        
-        if (is_object($body)) {
-            $body = (array) $body;
-        }
+        $preparedBody = $this->prepareBody($body);
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $this->headers, $body);
+        $response = $this->sendRequest->sendRequest('POST', $endpoint, $this->headers, $preparedBody);
         return $response;
     }
 }

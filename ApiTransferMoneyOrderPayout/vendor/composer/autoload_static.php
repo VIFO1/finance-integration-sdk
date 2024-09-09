@@ -185,7 +185,7 @@ class ComposerStaticInitd878d7884f8a8cac8b2691e0659199cd
         ),
         'ApiTransferMoneyOrderPayout\\Services\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
+            0 => __DIR__ . '/../..' . '/src/Services',
         ),
     );
 

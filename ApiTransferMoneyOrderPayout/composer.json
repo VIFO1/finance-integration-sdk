@@ -4,7 +4,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "ApiTransferMoneyOrderPayout\\Services\\": "src/"
+            "ApiTransferMoneyOrderPayout\\Services\\": "src/Services"
         }
     },
    

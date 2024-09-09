@@ -13,7 +13,7 @@ This PHP file uses services from `VifoServiceFactory` to perform banking, money 
 ## Code Structure
 ### 1. Import Classes and Requirements Automatically
 ```php
-use App\Services\VifoServiceFactory;
+use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
 require 'vendor/autoload.php';
 
 2.Login
