@@ -9,7 +9,7 @@ class Webhook
      *
      * @param string $secretKey The secret key used for validation.
      * @param string $timestamp The timestamp of the request.
-     * @param mixed $body The body of the request, can be of any type.
+     * @param string $body The body of the request, must be a string.
      * 
      * @return string|null Returns an error message if validation fails, or null if validation passes.
      */
