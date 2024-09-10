@@ -14,7 +14,6 @@ This PHP file uses services from `VifoServiceFactory` to perform banking, money 
 ### 1. Import Classes and Requirements Automatically
 ```php
 use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
-require 'vendor/autoload.php';
 
 2.Login
 $login = new VifoServiceFactory('*');
