@@ -1,14 +1,12 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
 class VifoTransferMoney
 {
-    private $headers;
     private $sendRequest;
-    public function __construct($headers)
+    public function __construct()
     {
-        $this->headers = $headers;
         $this->sendRequest = new VifoSendRequest();
     }
     /**
@@ -25,7 +23,7 @@ class VifoTransferMoney
         }
         return $errors;
     }
-    public function createTransferMoney($body)
+    public function createTransferMoney(array $headers, array $body): array
     {
         $endpoint = '/v2/finance';
 
@@ -35,7 +33,7 @@ class VifoTransferMoney
             return ['errors' => $errors];
         }
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $this->headers, $body);
+        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
 
         return $response;
     }

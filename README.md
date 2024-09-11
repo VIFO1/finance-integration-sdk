@@ -16,32 +16,26 @@ This PHP file uses services from `VifoServiceFactory` to perform banking, money 
 use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
 
 2.Login
-$login = new VifoServiceFactory('*');
-$login->login($headers,$username,$password);
+$serviceFactory = new VifoServiceFactory('*');
+$login = $serviceFactory->checkAuthenticateUser($headers,$username.$password);
 
 3.Prepare data
 
 3.1  Get List of available Banks:
-$bank = new VifoBank($headers);
-$bank->getBank($body);
+$bakn = $serviceFactory ->checkGetBank($headers,$body);
 
 3.2 Get NAPAS Beneficiary Name:
-$bank->getBeneficiaryName($body);
+$bank = $serviceFactory ->checkGetBeneficiaryName($headers,$body);
 
 4.Create Transfer Money API:
-$transfer = new VifoTransferMoney($headers);
-$transfer->createTransferMoney($body);
+$transfer = $serviceFactory ->checkTransferMoney($headers,$body);
 
 5.Bulk Approve Transfer Money API
 
-$approveTransferMoney = new VifoApproveTransferMoney($headers);
-$approveTransferMoney->approveTransfers($secretKey,$timestamp,$body);
-
+$approveTransferMoney=$serviceFactory->checkApproveTransferMoney($secretKey,$timestamp$headers,$body);
 
 6.Webhook to inform the result of transfer / pay out request
-$webhook = new Webhook();
-$webhook->handle($data, $requestSignature, $secretKey);
+$webhook = serviceFactory->checkWebhook( $data,  $requestSignature,  $secretKey,  $timestamp):
 
 7. Others request
-$otherRequest =  new VifoOtherRequest($headers);
-$otherRequest->checkOrderStatus($key);
+$otherRequest = $serviceFactory ->checkOtherRequest($headers,$key);

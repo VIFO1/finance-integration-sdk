@@ -1,11 +1,12 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Modules\Interfaces\VifoSendRequestInterface;
 
-class VifoSendRequest
+class VifoSendRequest implements VifoSendRequestInterface
 {
     private $client;
     private $baseUrl;
@@ -15,14 +16,16 @@ class VifoSendRequest
             $this->baseUrl = 'https://sapi.vifo.vn';
         } else if ($env == 'tsg') {
             $this->baseUrl = 'https://sapi.vifo.vn';
-        } else {
+        } else if ($env == 'production') {
             $this->baseUrl = 'https://api.vifo.vn';
+        } else {
+            throw new \InvalidArgumentException("Invalid environment: $env");
         }
-     
+
         $this->client = new Client();
     }
 
-     /**
+    /**
      * Send an HTTP request.
      *
      * @param string $method The HTTP method (GET, POST....).
@@ -31,23 +34,28 @@ class VifoSendRequest
      * @param array $body The request body.
      * @return array An array containing the status code and body of the response, or error information.
      */
-    public function sendRequest($method, $endpoint, $headers, $body)
+    public function sendRequest(string $method, string $endpoint, array $headers, array $body): array
     {
+
         $baseUrl = $this->baseUrl . $endpoint;
-        $result = []; 
+
         try {
             $response = $this->client->request($method, $baseUrl, [
                 'headers' => $headers,
-                'json' => $body
+                'json' => $body,
             ]);
-            
             $json = json_decode($response->getBody()->getContents(), true);
-            $result['status_code'] = $response->getStatusCode();
-            $result['body'] = $json;
+            return [
+                'status_code' => $response->getStatusCode(),
+                'body' => $json,
+                'errors' => null
+            ];
         } catch (RequestException $e) {
-            $result['error'] = $e->getMessage();
-            $result['body'] = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null;
+            return [
+                'errors' => 'Request Exception: ' . $e->getMessage(),
+                'status_code' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : 500,
+                'body' => $e->hasResponse() ? json_decode($e->getResponse()->getBody()->getContents(), true) : null
+            ];
         }
-        return $result; 
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
-class VifoOtherRequest
+use Modules\Interfaces\VifoOtherRequestInterface;
+
+class VifoOtherRequest implements VifoOtherRequestInterface
 {
-    private $headers;
     private $sendRequest;
 
-    public function __construct($headers)
+    public function __construct()
     {
-        $this->headers = $headers;
         $this->sendRequest = new VifoSendRequest();
     }
     /**
@@ -40,7 +40,7 @@ class VifoOtherRequest
      *
      * @return array The response from the API.
      */
-    public function checkOrderStatus($key)
+    public function checkOrderStatus(array $headers, string $key): array
     {
         $errors = $this->validateOrderKey($key);
         if (!empty($errors)) {
@@ -49,7 +49,7 @@ class VifoOtherRequest
 
         $endpoint = "/v2/finance/{$key}/status";
 
-        $response = $this->sendRequest->sendRequest("GET", $endpoint, $this->headers, $body = "");
+        $response = $this->sendRequest->sendRequest("GET", $endpoint, $headers, $body = []);
         return $response;
     }
 }

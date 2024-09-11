@@ -1,19 +1,14 @@
 <?php
+namespace Modules\Services;
 
-namespace ApiTransferMoneyOrderPayout\Services;
+use Modules\Interfaces\VifoAuthenticateInterface;
 
-
-class VifoServiceFactory
+class VifoAuthenticate implements VifoAuthenticateInterface
 {
-    private $env;
-    public $login;
     private $sendRequest;
-
-    public function __construct($env = 'dev')
+    public function __construct()
     {
-        $this->env = $env;
-        $this->login = new VifoAuthenticate();
-        $this->sendRequest = new VifoSendRequest($this->env);
+        $this->sendRequest = new VifoSendRequest();
     }
     /**
      * Validate the login input.
@@ -41,18 +36,31 @@ class VifoServiceFactory
         }
         return $errors;
     }
+    /**
+     * Build the body for the login request.
+     *
+     * @param string $username
+     * @param string $password
+     * @return array
+     */
+    private function buildLoginBody(string $username, string $password): array
+    {
+        return [
+            'username' => $username,
+            'password' => $password
+        ];
+    }
 
-    public function login($headers, $username, $password)
+    public function authenticateUser(array $headers, string $username, string $password): array
     {
         $errors = $this->validateLoginInput($headers, $username, $password);
         if (!empty($errors)) {
             return ['errors' => $errors];
         }
-
         $endpoint = '/v1/clients/web/admin/login';
-        $body = $this->login->login($username, $password);
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
+        $body = $this->buildLoginBody($username, $password);
 
+        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
         return $response;
     }
 }

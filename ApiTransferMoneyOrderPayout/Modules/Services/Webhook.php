@@ -1,8 +1,10 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
-class Webhook
+use Modules\Interfaces\WebhookInterface;
+
+class Webhook implements WebhookInterface
 {
     /**
      * Validate the input parameters for a request.
@@ -14,7 +16,7 @@ class Webhook
      * @return array An array containing error messages if validation fails. Each error message describes a specific validation issue.
      *               Returns an empty array if all input parameters are valid.
      */
-    private function validate(string $secretKey, string $timestamp,array $body): array
+    private function validate(string $secretKey, string $timestamp, array $body): array
     {
         $errors = [];
         if (empty($secretKey)) {
@@ -32,7 +34,7 @@ class Webhook
         return $errors;
     }
 
-    private function createSignature($body, $secretKey, $timestamp)
+    private function createSignature(array $body, string $secretKey, string $timestamp): string
     {
         ksort($body);
         $payload = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -41,12 +43,12 @@ class Webhook
         return hash_hmac('sha256', $signatureString, $secretKey);
     }
 
-    public function handle($data, $requestSignature, $secretKey, $timestamp)
+    public function handleSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
     {
         $errors = $this->validate($secretKey, $timestamp, $data);
 
         if (!empty($errors)) {
-            return ['errors'=>$errors];
+            return ['errors' => $errors];
         }
 
         $generatedSignature = $this->createSignature($data, $secretKey, $timestamp);

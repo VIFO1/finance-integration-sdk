@@ -1,15 +1,15 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
-class VifoBank
+use Modules\Interfaces\VifoBankInterface;
+
+class VifoBank implements VifoBankInterface
 {
-    private $headers;
     private $sendRequest;
-    public function __construct($headers)
+    public function __construct()
     {
         $this->sendRequest = new VifoSendRequest();
-        $this->headers = $headers;
     }
 
 
@@ -22,8 +22,7 @@ class VifoBank
     private function prepareBody(array $body): array
     {
         $errors = [];
-        if(!is_array($body))
-        {
+        if (!is_array($body)) {
             $errors[] = 'Body must be an array';
         }
         return $errors;
@@ -33,18 +32,18 @@ class VifoBank
      * Get bank information from the API.
      *
      * @param array $body The request body, must be an array
+     * @param array $headers The request headers, must be an array
      * @return array The response from the API.
      */
-    public function getBank($body)
+    public function getBank(array $headers,array $body): array
     {
         $endpoint = '/v2/data/banks/napas';
         $errors = $this->prepareBody($body);
-        if(!empty($errors))
-        {
+        if (!empty($errors)) {
             return ['errors' => $errors];
         }
 
-        $response = $this->sendRequest->sendRequest('GET', $endpoint, $this->headers, $body);
+        $response = $this->sendRequest->sendRequest('GET', $endpoint, $headers, $body);
         return $response;
     }
 
@@ -52,18 +51,18 @@ class VifoBank
      * Get the beneficiary name from the API.
      *
      * @param array $body The request body, must be an array
+     * @param array $headers The request headers, must be an array
      * @return array The response from the API.
      */
-    public function getBeneficiaryName($body)
+    public function getBeneficiaryName(array $headers,array $body): array
     {
         $endpoint = '/v2/finance/napas/receiver';
         $preparedBody = $this->prepareBody($body);
-        if(!empty($preparedBody))
-        {
+        if (!empty($preparedBody)) {
             return ['errors' => $preparedBody];
         }
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $this->headers, $body);
+        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
         return $response;
     }
 }

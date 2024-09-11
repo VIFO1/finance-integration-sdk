@@ -1,15 +1,15 @@
 <?php
 
-namespace ApiTransferMoneyOrderPayout\Services;
+namespace Modules\Services;
 
-class VifoApproveTransferMoney
+use Modules\Interfaces\VifoApproveTransferMoneyInterface;
+
+class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
 {
-    private $headers;
     private $sendRequest;
 
-    public function __construct($headers)
+    public function __construct()
     {
-        $this->headers = $headers;
         $this->sendRequest = new VifoSendRequest();
     }
     /**
@@ -46,7 +46,7 @@ class VifoApproveTransferMoney
      *
      * @return string The generated signature.
      */
-    private function createSignature($body, $secretKey, $timestamp)
+    private function createSignature(array $body, string $secretKey, string $timestamp): string
     {
         ksort($body);
         $payload = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -61,11 +61,11 @@ class VifoApproveTransferMoney
      * @param string $secretKey The secret key for authentication.
      * @param string $timestamp The timestamp of the request.
      * @param array $body The body of the request.
-     *
+     * @param array $headers The headers of the request.
      * @return array The response from the request.
      */
 
-    public function approveTransfers($secretKey, $timestamp, $body)
+    public function approveTransfers(string $secretKey, string $timestamp, array $headers, array $body): array
     {
         $errors  = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
 
@@ -77,12 +77,12 @@ class VifoApproveTransferMoney
 
         $requestSignature = $this->createSignature($body, $secretKey, $timestamp);
 
-        $this->headers = array_merge($this->headers, [
+        $headers = array_merge($headers, [
             'x-request-timestamp' => $timestamp,
             'x-request-signature' => $requestSignature
         ]);
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $this->headers, $body);
+        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
 
         return $response;
     }
