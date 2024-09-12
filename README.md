@@ -17,25 +17,25 @@ use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
 
 2.Login
 $serviceFactory = new VifoServiceFactory('*');
-$login = $serviceFactory->checkAuthenticateUser($headers,$username.$password);
+$authenticateUser = $serviceFactory->performUserAuthentication(string $username, string $password);
 
 3.Prepare data
 
 3.1  Get List of available Banks:
-$bank = $serviceFactory ->checkGetBank($headers,$body);
+$bankService = $serviceFactory ->fetchBankInformation(string $accessToken, array $body);
 
 3.2 Get NAPAS Beneficiary Name:
-$bank = $serviceFactory ->checkGetBeneficiaryName($headers,$body);
+$bankService = $serviceFactory ->fetchBeneficiaryName(string $accessToken, array $body);
 
 4.Create Transfer Money API:
-$transfer = $serviceFactory ->checkTransferMoney($headers,$body);
+$transferMoneyService = $serviceFactory ->executeMoneyTransfer(string $accessToken, array $body);
 
 5.Bulk Approve Transfer Money API
 
-$approveTransferMoney=$serviceFactory->checkApproveTransferMoney($accessToken, $secretKey,  $timestamp, $body);
+$approveTransferMoneyService=$serviceFactory->approveMoneyTransfer(string $accessToken, string $secretKey, string $timestamp, array $body);
 
 6.Webhook to inform the result of transfer / pay out request
-$webhook = serviceFactory->checkWebhook( $data,  $requestSignature,  $secretKey,  $timestamp):
+$webhookService = serviceFactory->verifyWebhookSignature(array $data, string $requestSignature, string $secretKey, string $timestamp):
 
 7. Others request
-$otherRequest = $serviceFactory ->checkOtherRequest($headers,$key);
+$otherRequestService = $serviceFactory ->processOtherRequest(string $accessToken, string $key);

@@ -2,37 +2,53 @@
 
 namespace Modules\Services;
 
-class VifoServiceFactory
+use Modules\Interfaces\VifoServiceFactoryInterface;
+
+class VifoServiceFactory implements VifoServiceFactoryInterface
 {
     private $env;
-    private $bank;
+    private $bankService;
     private $loginAuthenticateUser;
     private $sendRequest;
-    private $transferMoney;
-    private $approveTransferMoney;
-    private $otherRequest;
-    private $webhook;
-    private $headers;
+    private $transferMoneyService;
+    private $approveTransferMoneyService;
+    private $otherRequestService;
+    private $webhookHandler;
+    private $headerService;
+    private $headersLogin;
     public function __construct($env)
     {
         $this->env = $env;
         $this->loginAuthenticateUser = new VifoAuthenticate();
         $this->sendRequest = new VifoSendRequest($this->env);
-        $this->bank = new VifoBank();
-        $this->transferMoney = new VifoTransferMoney();
-        $this->approveTransferMoney = new VifoApproveTransferMoney();
-        $this->otherRequest = new VifoOtherRequest();
-        $this->webhook = new Webhook();
+        $this->bankService  = new VifoBank();
+        $this->transferMoneyService  = new VifoTransferMoney();
+        $this->approveTransferMoneyService = new VifoApproveTransferMoney();
+        $this->otherRequestService = new VifoOtherRequest();
+        $this->webhookHandler = new Webhook();
 
-        $this->headers = [
+        $this->headerService = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+
+        $this->headersLogin = [
+            'Accept' => 'application/json',
+            'text/plain',
+            '*/*',
+            'Accept-Encoding' => 'gzip',
+            'deflate',
+            'Accept-Language' => '*',
+        ];
+    }
+    public function updateAuthorizationHeader(string $accessToken): void
+    {
+        $this->headerService['Authorization'] = 'Bearer ' . $accessToken;
     }
 
-    public function checkAuthenticateUser(array $headers, string $username, string $password): array
+    public function performUserAuthentication(string $username, string $password): array
     {
-        $response = $this->loginAuthenticateUser->authenticateUser($headers, $username, $password);
+        $response = $this->loginAuthenticateUser->authenticateUser($this->headersLogin, $username, $password);
         if (isset($response['errors']) || !isset($response['body']['access_token'])) {
             return [
                 'status' => 'errors',
@@ -44,21 +60,23 @@ class VifoServiceFactory
         return $response;
     }
 
-    public function checkGetBank(array $headers, array $body): array
+    public function fetchBankInformation(string $accessToken, array $body): array
     {
-        $response = $this->bank->getBank($headers, $body);
+        $this->updateAuthorizationHeader($accessToken);
+        $response = $this->bankService->getBank($this->headerService, $body);
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
-                'message' => 'Authentication failed due to errors.Authentication failed. Please check your access token or credentials.',
-                'status_code' => $response['status_code']
+                'message' => $response['errors'],
+                'status_code' => $response['status_code'] ?? ''
             ];
         }
         return $response;
     }
 
-    public function checkGetBeneficiaryName(array $headers, array $body): array
+    public function fetchBeneficiaryName(string $accessToken, array $body): array
     {
+        $this->updateAuthorizationHeader($accessToken);
         if (empty($body['bank_code']) || empty($body['account_number'])) {
             return [
                 'status' => 'errors',
@@ -66,38 +84,42 @@ class VifoServiceFactory
             ];
         }
 
-        $response = $this->bank->getBeneficiaryName($headers, $body);
+        $response = $this->bankService->getBeneficiaryName($this->headerService, $body);
 
         return $response;
     }
 
-    public function checkTransferMoney(array $headers, array $body): array
+    public function executeMoneyTransfer(string $accessToken, array $body): array
     {
-        $response = $this->transferMoney->createTransferMoney($headers, $body);
+        $this->updateAuthorizationHeader($accessToken);
+
+        $response = $this->transferMoneyService->createTransferMoney($this->headerService, $body);
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
                 'message' => $response['body']['message'] ?? '',
-                'status_code' => $response['status_code'],
+                'status_code' => $response['status_code'] ?? '',
                 'errors' => $response['errors']
             ];
         }
         return $response;
     }
 
-    public function checkApproveTransferMoney(string $accessToken, string $secretKey, string $timestamp, array $body): array
+    public function approveMoneyTransfer(string $accessToken, string $secretKey, string $timestamp, array $body): array
     {
-        $requestSignature = $this->approveTransferMoney->createSignature($body, $secretKey, $timestamp);
-        $this->headers['x-request-timestamp'] = $timestamp;
-        $this->headers['x-request-signature'] = $requestSignature;
-        $this->headers['Authorization'] = 'Bearer ' . $accessToken;
+        $this->updateAuthorizationHeader($accessToken);
+
+        $requestSignature = $this->approveTransferMoneyService->createSignature($body, $secretKey, $timestamp);
+        $this->headerService['x-request-timestamp'] = $timestamp;
+        $this->headerService['x-request-signature'] = $requestSignature;
+        $this->headerService['Authorization'] = 'Bearer ' . $accessToken;
 
 
-        $response = $this->approveTransferMoney->approveTransfers($secretKey, $timestamp, $this->headers, $body);
+        $response = $this->approveTransferMoneyService->approveTransfers($secretKey, $timestamp, $this->headerService, $body);
 
-        unset($this->headers['x-request-timestamp']);
-        unset($this->headers['x-request-signature']);
-        unset($this->headers['Authorization']);
+        unset($this->headerService['x-request-timestamp']);
+        unset($this->headerService['x-request-signature']);
+        unset($this->headerService['Authorization']);
 
         if (isset($response['errors'])) {
             return [
@@ -109,22 +131,24 @@ class VifoServiceFactory
         return $response;
     }
 
-    public function checkOtherRequest(array $headers, string $key): array
+    public function processOtherRequest(string $accessToken, string $key): array
     {
-        $response = $this->otherRequest->checkOrderStatus($headers, $key);
+        $this->updateAuthorizationHeader($accessToken);
+
+        $response = $this->otherRequestService->checkOrderStatus($this->headerService, $key);
         if (empty($response['body']['data'])) {
             return [
                 'status' => 'error',
                 'message' => 'Request failed due to errors: ' . $response['body']['message'],
-                'status_code' => $response['status_code']
+                'status_code' => $response['status_code'] ?? ''
             ];
         }
         return $response;
     }
 
-    public function checkWebhook(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
+    public function verifyWebhookSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
     {
-        $result = $this->webhook->handleSignature($data, $requestSignature, $secretKey, $timestamp);
+        $result = $this->webhookHandler->handleSignature($data, $requestSignature, $secretKey, $timestamp);
 
         if ($result) {
             return true;
