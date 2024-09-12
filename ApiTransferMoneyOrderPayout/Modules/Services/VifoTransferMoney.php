@@ -15,11 +15,14 @@ class VifoTransferMoney
      * @param array $body must be an array
      * @return array The prepared body as an array.
      */
-    private function prepareBody(array $body): array
+    private function validateRequestInput(array $headers, array $body): array
     {
         $errors = [];
         if (!is_array($body)) {
             $errors[] = 'Body must be an array';
+        }
+        if (empty($headers) || !is_array($headers)) {
+            $errors[] = 'headers must be a non-empty array';
         }
         return $errors;
     }
@@ -27,14 +30,11 @@ class VifoTransferMoney
     {
         $endpoint = '/v2/finance';
 
-        $errors = $this->prepareBody($body);
-        if(!empty($errors))
-        {
+        $errors = $this->validateRequestInput($headers, $body);
+        if (!empty($errors)) {
             return ['errors' => $errors];
         }
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
-
-        return $response;
+        return $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
     }
 }

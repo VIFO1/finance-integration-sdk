@@ -48,7 +48,6 @@ class VifoSendRequest implements VifoSendRequestInterface
             return [
                 'status_code' => $response->getStatusCode(),
                 'body' => $json,
-                'errors' => null
             ];
         } catch (RequestException $e) {
             return [

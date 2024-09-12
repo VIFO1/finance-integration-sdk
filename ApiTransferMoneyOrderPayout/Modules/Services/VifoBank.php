@@ -19,11 +19,14 @@ class VifoBank implements VifoBankInterface
      * @param array $body must be an array
      * @return array The prepared body as an array.
      */
-    private function prepareBody(array $body): array
+    private function validateBody(array $headers, array $body): array
     {
         $errors = [];
-        if (!is_array($body)) {
-            $errors[] = 'Body must be an array';
+        if (empty($body) || !is_array($body)) {
+            $errors[] = 'Body must be a non-empty array.';
+        }
+        if (empty($headers) || !is_array($headers)) {
+            $errors[] = 'headers must be a non-empty array';
         }
         return $errors;
     }
@@ -35,16 +38,15 @@ class VifoBank implements VifoBankInterface
      * @param array $headers The request headers, must be an array
      * @return array The response from the API.
      */
-    public function getBank(array $headers,array $body): array
+    public function getBank(array $headers, array $body): array
     {
         $endpoint = '/v2/data/banks/napas';
-        $errors = $this->prepareBody($body);
+        $errors = $this->validateBody($headers, $body);
         if (!empty($errors)) {
             return ['errors' => $errors];
         }
 
-        $response = $this->sendRequest->sendRequest('GET', $endpoint, $headers, $body);
-        return $response;
+        return $this->sendRequest->sendRequest('GET', $endpoint, $headers, $body);
     }
 
     /**
@@ -54,15 +56,14 @@ class VifoBank implements VifoBankInterface
      * @param array $headers The request headers, must be an array
      * @return array The response from the API.
      */
-    public function getBeneficiaryName(array $headers,array $body): array
+    public function getBeneficiaryName(array $headers, array $body): array
     {
         $endpoint = '/v2/finance/napas/receiver';
-        $preparedBody = $this->prepareBody($body);
-        if (!empty($preparedBody)) {
-            return ['errors' => $preparedBody];
+        $errors = $this->validateBody($headers, $body);
+        if (!empty($errors)) {
+            return ['errors' => $errors];
         }
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
-        return $response;
+        return $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
     }
 }

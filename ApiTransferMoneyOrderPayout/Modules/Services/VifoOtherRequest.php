@@ -19,7 +19,7 @@ class VifoOtherRequest implements VifoOtherRequestInterface
      * 
      * @return array An array containing error messages if validation fails; otherwise, an empty array.        
      */
-    private function validateOrderKey(string $key): array
+    private function validateOrderKey(array $headers, string $key): array
     {
         $errors = [];
         if (empty($key)) {
@@ -29,7 +29,9 @@ class VifoOtherRequest implements VifoOtherRequestInterface
         if (!is_string($key)) {
             $errors[] = 'Order key must be a string';
         }
-
+        if (empty($headers) || !is_array($headers)) {
+            $errors[] = 'headers must be a non-empty array';
+        }
         return $errors;
     }
 
@@ -42,14 +44,13 @@ class VifoOtherRequest implements VifoOtherRequestInterface
      */
     public function checkOrderStatus(array $headers, string $key): array
     {
-        $errors = $this->validateOrderKey($key);
+        $errors = $this->validateOrderKey($headers, $key);
         if (!empty($errors)) {
             return ['errors' => $errors];
         }
 
         $endpoint = "/v2/finance/{$key}/status";
 
-        $response = $this->sendRequest->sendRequest("GET", $endpoint, $headers, $body = []);
-        return $response;
+        return $this->sendRequest->sendRequest("GET", $endpoint, $headers, []);
     }
 }

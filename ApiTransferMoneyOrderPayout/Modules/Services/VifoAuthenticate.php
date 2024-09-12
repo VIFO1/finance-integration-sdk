@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Services;
 
 use Modules\Interfaces\VifoAuthenticateInterface;
@@ -60,7 +61,6 @@ class VifoAuthenticate implements VifoAuthenticateInterface
         $endpoint = '/v1/clients/web/admin/login';
         $body = $this->buildLoginBody($username, $password);
 
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
-        return $response;
+        return $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
     }
 }

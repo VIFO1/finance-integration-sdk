@@ -12,6 +12,7 @@ class VifoServiceFactory
     private $approveTransferMoney;
     private $otherRequest;
     private $webhook;
+    private $headers;
     public function __construct($env)
     {
         $this->env = $env;
@@ -22,11 +23,15 @@ class VifoServiceFactory
         $this->approveTransferMoney = new VifoApproveTransferMoney();
         $this->otherRequest = new VifoOtherRequest();
         $this->webhook = new Webhook();
+
+        $this->headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
     }
 
     public function checkAuthenticateUser(array $headers, string $username, string $password): array
     {
-
         $response = $this->loginAuthenticateUser->authenticateUser($headers, $username, $password);
         if (isset($response['errors']) || !isset($response['body']['access_token'])) {
             return [
@@ -72,7 +77,7 @@ class VifoServiceFactory
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
-                'message' => $response['body']['message'],
+                'message' => $response['body']['message'] ?? '',
                 'status_code' => $response['status_code'],
                 'errors' => $response['errors']
             ];
@@ -80,9 +85,19 @@ class VifoServiceFactory
         return $response;
     }
 
-    public function checkApproveTransferMoney(string $secretKey, string $timestamp, array $headers, array $body): array
+    public function checkApproveTransferMoney(string $accessToken, string $secretKey, string $timestamp, array $body): array
     {
-        $response = $this->approveTransferMoney->approveTransfers($secretKey, $timestamp, $headers, $body);
+        $requestSignature = $this->approveTransferMoney->createSignature($body, $secretKey, $timestamp);
+        $this->headers['x-request-timestamp'] = $timestamp;
+        $this->headers['x-request-signature'] = $requestSignature;
+        $this->headers['Authorization'] = 'Bearer ' . $accessToken;
+
+
+        $response = $this->approveTransferMoney->approveTransfers($secretKey, $timestamp, $this->headers, $body);
+
+        unset($this->headers['x-request-timestamp']);
+        unset($this->headers['x-request-signature']);
+        unset($this->headers['Authorization']);
 
         if (isset($response['errors'])) {
             return [
@@ -107,15 +122,14 @@ class VifoServiceFactory
         return $response;
     }
 
-    public function checkWebhook(array $data, string $requestSignature, string $secretKey, string $timestamp): string
+    public function checkWebhook(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
     {
         $result = $this->webhook->handleSignature($data, $requestSignature, $secretKey, $timestamp);
 
-
         if ($result) {
-            return 'Webhook Authentication Successful.';
+            return true;
         } else {
-            return 'Webhook Authentication Failed.';
+            return false;
         }
     }
 }

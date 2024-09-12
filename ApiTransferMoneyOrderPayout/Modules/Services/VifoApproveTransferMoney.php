@@ -46,8 +46,14 @@ class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
      *
      * @return string The generated signature.
      */
-    private function createSignature(array $body, string $secretKey, string $timestamp): string
+    public function createSignature(array $body, string $secretKey, string $timestamp): string
     {
+        $errors  = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
+
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
         ksort($body);
         $payload = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $signatureString = $timestamp . $payload;
@@ -75,15 +81,6 @@ class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
 
         $endpoint = '/v2/finance/confirm';
 
-        $requestSignature = $this->createSignature($body, $secretKey, $timestamp);
-
-        $headers = array_merge($headers, [
-            'x-request-timestamp' => $timestamp,
-            'x-request-signature' => $requestSignature
-        ]);
-
-        $response = $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
-
-        return $response;
+        return $this->sendRequest->sendRequest('POST', $endpoint, $headers, $body);
     }
 }

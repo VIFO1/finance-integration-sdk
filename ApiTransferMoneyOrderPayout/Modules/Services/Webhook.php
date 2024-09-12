@@ -33,7 +33,15 @@ class Webhook implements WebhookInterface
 
         return $errors;
     }
-
+    /**
+     * Create the signature for validation.
+     *
+     * @param array $body The body of the request.
+     * @param string $secretKey The secret key.
+     * @param string $timestamp The timestamp.
+     * 
+     * @return string The generated HMAC SHA-256 signature.
+     */
     private function createSignature(array $body, string $secretKey, string $timestamp): string
     {
         ksort($body);
@@ -42,7 +50,16 @@ class Webhook implements WebhookInterface
 
         return hash_hmac('sha256', $signatureString, $secretKey);
     }
-
+    /**
+     * Handle the validation of the request signature.
+     *
+     * @param array $data The data (body) of the request.
+     * @param string $requestSignature The signature from the request headers.
+     * @param string $secretKey The secret key for generating the signature.
+     * @param string $timestamp The timestamp from the request headers.
+     * 
+     * @return bool True if the signature is valid, false otherwise.
+     */
     public function handleSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
     {
         $errors = $this->validate($secretKey, $timestamp, $data);

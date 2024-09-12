@@ -22,7 +22,7 @@ $login = $serviceFactory->checkAuthenticateUser($headers,$username.$password);
 3.Prepare data
 
 3.1  Get List of available Banks:
-$bakn = $serviceFactory ->checkGetBank($headers,$body);
+$bank = $serviceFactory ->checkGetBank($headers,$body);
 
 3.2 Get NAPAS Beneficiary Name:
 $bank = $serviceFactory ->checkGetBeneficiaryName($headers,$body);
@@ -32,7 +32,7 @@ $transfer = $serviceFactory ->checkTransferMoney($headers,$body);
 
 5.Bulk Approve Transfer Money API
 
-$approveTransferMoney=$serviceFactory->checkApproveTransferMoney($secretKey,$timestamp$headers,$body);
+$approveTransferMoney=$serviceFactory->checkApproveTransferMoney($accessToken, $secretKey,  $timestamp, $body);
 
 6.Webhook to inform the result of transfer / pay out request
 $webhook = serviceFactory->checkWebhook( $data,  $requestSignature,  $secretKey,  $timestamp):
