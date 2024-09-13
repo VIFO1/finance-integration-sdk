@@ -49,6 +49,28 @@ $webhookService = serviceFactory->verifyWebhookSignature(array $data, string $re
 7. Others request
 $otherRequestService = $serviceFactory ->processOtherRequest(string $key);
 
-8.Create Order
-$orderService = createOrderService(array $body): array;
+8.Create Reva Order
+public function createRevaOrder(
+        string $productCode,
+        string $distributorOrderNumber,
+        string $phone,
+        string $fullname,
+        float $finalAmount,
+        string $beneficiaryAccountNo,
+        string $beneficiaryBankCode,
+        string $comment,
+        string $sourceAccountNo
+    ): array;
 
+9.Create Neva Order
+public function createNevaOrder(
+        string $productCode,
+        string $distributorOrderNumber,
+        string $phone,
+        string $fullname,
+        float $finalAmount,
+        string $beneficiaryAccountNo,
+        string $beneficiaryBankCode,
+        string $comment,
+        string $sourceAccountNo
+    ): array;
