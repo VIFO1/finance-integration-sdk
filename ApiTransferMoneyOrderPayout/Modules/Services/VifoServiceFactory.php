@@ -18,7 +18,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     private $headersLogin;
     private $userToken;
     private $adminToken;
-    private $createOrderService;
+    private $createOrder;
     public function __construct($env)
     {
         $this->env = $env;
@@ -29,7 +29,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $this->approveTransferMoneyService = new VifoApproveTransferMoney();
         $this->otherRequestService = new VifoOtherRequest();
         $this->webhookHandler = new Webhook();
-        $this->createOrderService = new VifoOrder();
+        $this->createOrder = new VifoCreateOrder();
         $this->headersService = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -50,10 +50,12 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     {
         $this->userToken = $token;
     }
+
     public function setAdminToken(string $token): void
     {
         $this->adminToken = $token;
     }
+
     public function getHeadersService(string $type = 'user'): array
     {
         $token = $type == 'user' ? $this->userToken : $this->adminToken;
@@ -169,19 +171,63 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         }
     }
 
-    public function createOrderService(array $body): array
-    {
+    public function createRevaOrder(
+        string $productCode,
+        string $distributorOrderNumber,
+        string $phone,
+        string $fullname,
+        float $finalAmount,
+        string $beneficiaryAccountNo,
+        string $beneficiaryBankCode,
+        string $comment,
+        string $sourceAccountNo
+    ): array {
         $headers = $this->getHeadersService('admin');
-
-        $response = $this->createOrderService->createOrder($headers, $body);
+        $body = [
+            'product_code' => $productCode,
+            'phone' => $phone,
+            'fullname' => $fullname,
+            'final_amount' => $finalAmount,
+            'distributor_order_number' => $distributorOrderNumber,
+            'benefiary_bank_code' => $beneficiaryBankCode,
+            'benefiary account no' => $beneficiaryAccountNo,
+            'comment' => $comment,
+            'source_account_no' => $sourceAccountNo,
+        ];
+        $response = $this->createOrder->createOrder($headers, $body);
 
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
-                'message' => $response['errors'],
+                'message' => 'Order creation failed',
+                $response['errors'],
                 'status_code' => $response['status_code'] ?? ''
             ];
         }
         return $response;
+    }
+
+    public function createNevaOrder(
+        string $productCode,
+        string $distributorOrderNumber,
+        string $phone,
+        string $fullname,
+        float $finalAmount,
+        string $beneficiaryAccountNo,
+        string $beneficiaryBankCode,
+        string $comment,
+        string $sourceAccountNo
+    ): array {
+        return $this->createRevaOrder(
+            $productCode,
+            $distributorOrderNumber,
+            $phone,
+            $fullname,
+            $finalAmount,
+            $beneficiaryAccountNo,
+            $beneficiaryBankCode,
+            $comment,
+            $sourceAccountNo
+        );
     }
 }
