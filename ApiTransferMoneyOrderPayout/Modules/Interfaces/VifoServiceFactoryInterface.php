@@ -23,4 +23,6 @@ interface VifoServiceFactoryInterface
     public function processOtherRequest(string $key): array;
 
     public function verifyWebhookSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool;
+
+    public function createOrderService(array $body): array;
 }

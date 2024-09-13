@@ -2,7 +2,9 @@
 
 namespace Modules\Services;
 
-class VifoTransferMoney
+use Modules\Interfaces\VifoTransferMoneyInterface;
+
+class VifoTransferMoney implements VifoTransferMoneyInterface
 {
     private $sendRequest;
     public function __construct()

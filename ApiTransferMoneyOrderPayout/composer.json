@@ -4,8 +4,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Modules\\Services\\": "Modules/Services",
-             "Modules\\Interfaces\\": "Modules/Interfaces"
+            "Modules\\Services\\": "Modules/Services/",
+             "Modules\\Interfaces\\": "Modules/Interfaces/"
         }
     },
    

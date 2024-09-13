@@ -4,7 +4,7 @@ namespace Modules\Services;
 
 use Modules\Interfaces\VifoServiceFactoryInterface;
 
-class VifoServiceFactory implements VifoServiceFactoryInterface
+class VifoServiceFactory  implements VifoServiceFactoryInterface
 {
     private $env;
     private $bankService;
@@ -18,6 +18,7 @@ class VifoServiceFactory implements VifoServiceFactoryInterface
     private $headersLogin;
     private $userToken;
     private $adminToken;
+    private $createOrderService;
     public function __construct($env)
     {
         $this->env = $env;
@@ -28,7 +29,7 @@ class VifoServiceFactory implements VifoServiceFactoryInterface
         $this->approveTransferMoneyService = new VifoApproveTransferMoney();
         $this->otherRequestService = new VifoOtherRequest();
         $this->webhookHandler = new Webhook();
-
+        $this->createOrderService = new VifoOrder();
         $this->headersService = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -166,5 +167,21 @@ class VifoServiceFactory implements VifoServiceFactoryInterface
         } else {
             return false;
         }
+    }
+
+    public function createOrderService(array $body): array
+    {
+        $headers = $this->getHeadersService('admin');
+
+        $response = $this->createOrderService->createOrder($headers, $body);
+
+        if (isset($response['errors'])) {
+            return [
+                'status' => 'errors',
+                'message' => $response['errors'],
+                'status_code' => $response['status_code'] ?? ''
+            ];
+        }
+        return $response;
     }
 }
