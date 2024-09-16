@@ -6,7 +6,7 @@ PHP SDK finance of VIFO
 This PHP file uses services from `VifoServiceFactory` to perform banking, money transfer and other requests. The following guide provides detailed information on how to use and understand the functions of the code.
 
 ## Requirements
-- **PHP**: Version 7.4 or higher.N
+- **PHP**: Version 7.4 or higher.
 - **Composer**: Installed and configured to load dependencies.
 
 
