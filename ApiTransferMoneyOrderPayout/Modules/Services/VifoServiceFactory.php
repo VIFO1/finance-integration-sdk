@@ -7,14 +7,14 @@ use Modules\Interfaces\VifoServiceFactoryInterface;
 class VifoServiceFactory  implements VifoServiceFactoryInterface
 {
     private $env;
-    private $bankService;
+    private $bank;
     private $loginAuthenticateUser;
     private $sendRequest;
-    private $transferMoneyService;
-    private $approveTransferMoneyService;
-    private $otherRequestService;
+    private $transferMoney;
+    private $approveTransferMoney;
+    private $otherRequest;
     private $webhookHandler;
-    private $headersService;
+    private $headers;
     private $headersLogin;
     private $userToken;
     private $adminToken;
@@ -24,13 +24,13 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $this->env = $env;
         $this->loginAuthenticateUser = new VifoAuthenticate();
         $this->sendRequest = new VifoSendRequest($this->env);
-        $this->bankService  = new VifoBank();
-        $this->transferMoneyService  = new VifoTransferMoney();
-        $this->approveTransferMoneyService = new VifoApproveTransferMoney();
-        $this->otherRequestService = new VifoOtherRequest();
+        $this->bank  = new VifoBank();
+        $this->transferMoney  = new VifoTransferMoney();
+        $this->approveTransferMoney = new VifoApproveTransferMoney();
+        $this->otherRequest = new VifoOtherRequest();
         $this->webhookHandler = new Webhook();
         $this->createOrder = new VifoCreateOrder();
-        $this->headersService = [
+        $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
@@ -56,11 +56,11 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $this->adminToken = $token;
     }
 
-    public function getHeadersService(string $type = 'user'): array
+    public function getAuthorizationHeaders(string $type = 'user'): array
     {
         $token = $type == 'user' ? $this->userToken : $this->adminToken;
 
-        return array_merge($this->headersService, [
+        return array_merge($this->headers, [
             'Authorization' => 'Bearer ' . $token,
         ]);
     }
@@ -81,8 +81,8 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
 
     public function fetchBankInformation(array $body): array
     {
-        $headers = $this->getHeadersService('user');
-        $response = $this->bankService->getBank($headers, $body);
+        $headers = $this->getAuthorizationHeaders('user');
+        $response = $this->bank->getBank($headers, $body);
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
@@ -95,7 +95,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
 
     public function fetchBeneficiaryName(array $body): array
     {
-        $headers = $this->getHeadersService('user');
+        $headers = $this->getAuthorizationHeaders('user');
 
         if (empty($body['bank_code']) || empty($body['account_number'])) {
             return [
@@ -104,16 +104,16 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             ];
         }
 
-        $response = $this->bankService->getBeneficiaryName($headers, $body);
+        $response = $this->bank->getBeneficiaryName($headers, $body);
 
         return $response;
     }
 
     public function executeMoneyTransfer(array $body): array
     {
-        $headers = $this->getHeadersService('user');
+        $headers = $this->getAuthorizationHeaders('user');
 
-        $response = $this->transferMoneyService->createTransferMoney($headers, $body);
+        $response = $this->transferMoney->createTransferMoney($headers, $body);
         if (isset($response['errors'])) {
             return [
                 'status' => 'errors',
@@ -127,13 +127,13 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
 
     public function approveMoneyTransfer(string $secretKey, string $timestamp, array $body): array
     {
-        $headers = $this->getHeadersService('admin');
+        $headers = $this->getAuthorizationHeaders('admin');
 
-        $requestSignature = $this->approveTransferMoneyService->createSignature($body, $secretKey, $timestamp);
+        $requestSignature = $this->approveTransferMoney->createSignature($body, $secretKey, $timestamp);
         $headers['x-request-timestamp'] = $timestamp;
         $headers['x-request-signature'] = $requestSignature;
 
-        $response = $this->approveTransferMoneyService->approveTransfers($secretKey, $timestamp, $headers, $body);
+        $response = $this->approveTransferMoney->approveTransfers($secretKey, $timestamp, $headers, $body);
 
         if (isset($response['errors'])) {
             return [
@@ -147,9 +147,9 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
 
     public function processOtherRequest(string $key): array
     {
-        $headers = $this->getHeadersService('user');
+        $headers = $this->getAuthorizationHeaders('user');
 
-        $response = $this->otherRequestService->checkOrderStatus($headers, $key);
+        $response = $this->otherRequest->checkOrderStatus($headers, $key);
         if (empty($response['body']['data'])) {
             return [
                 'status' => 'error',
@@ -182,7 +182,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         string $comment,
         string $sourceAccountNo
     ): array {
-        $headers = $this->getHeadersService('admin');
+        $headers = $this->getAuthorizationHeaders('admin');
         $body = [
             'product_code' => $productCode,
             'phone' => $phone,

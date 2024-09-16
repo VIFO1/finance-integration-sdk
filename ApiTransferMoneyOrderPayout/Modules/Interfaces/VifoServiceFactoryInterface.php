@@ -8,7 +8,7 @@ interface VifoServiceFactoryInterface
 
     public function setAdminToken(string $token): void;
 
-    public function getHeadersService(string $type = 'user'): array;
+    public function getAuthorizationHeaders(string $type = 'user'): array;
 
     public function performUserAuthentication(string $username, string $password): array;
 
