@@ -61,6 +61,8 @@ $createRevaOrder = $serviceFactory-> createRevaOrder(
         string $comment,
         string $sourceAccountNo
     ): array;
+-Description: This method creates a new Reva order.
+-Returns: An array containing the response of the order creation.
 
 9.Create Seva Order
 $createSevaOrder = $serviceFactory->createNevaOrder(
@@ -74,3 +76,5 @@ $createSevaOrder = $serviceFactory->createNevaOrder(
         string $comment,
         string $sourceAccountNo
     ): array;
+-Description: This method creates a new Seva order.
+-Returns: An array containing the response of the order creation.

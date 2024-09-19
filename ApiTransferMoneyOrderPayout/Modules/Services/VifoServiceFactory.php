@@ -130,6 +130,13 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $headers = $this->getAuthorizationHeaders('admin');
 
         $requestSignature = $this->approveTransferMoney->createSignature($body, $secretKey, $timestamp);
+        if ($requestSignature === 'errors') {
+            return [
+                'status' => 'errors',
+                'message' => 'Signature creation failed due to invalid inputs.',
+                'status_code' => '400'
+            ];
+        }
         $headers['x-request-timestamp'] = $timestamp;
         $headers['x-request-signature'] = $requestSignature;
 
