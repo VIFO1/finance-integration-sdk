@@ -36,7 +36,7 @@ interface VifoServiceFactoryInterface
         string $sourceAccountNo
     ): array;
 
-    public function createNevaOrder(
+    public function createSevaOrder(
         string $productCode,
         string $distributorOrderNumber,
         string $phone,

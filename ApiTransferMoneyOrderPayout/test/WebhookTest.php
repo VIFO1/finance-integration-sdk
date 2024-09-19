@@ -2,7 +2,7 @@
 
 namespace Test;
 
-use App\Services\Webhook;
+use Modules\Services\Webhook;
 use PHPUnit\Framework\TestCase;
 
 class WebhookTest extends TestCase

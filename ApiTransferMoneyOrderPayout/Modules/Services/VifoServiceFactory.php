@@ -207,7 +207,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         return $response;
     }
 
-    public function createNevaOrder(
+    public function createSevaOrder(
         string $productCode,
         string $distributorOrderNumber,
         string $phone,

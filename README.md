@@ -62,8 +62,8 @@ $createRevaOrder = $serviceFactory-> createRevaOrder(
         string $sourceAccountNo
     ): array;
 
-9.Create Neva Order
-$createNevaOrder = $serviceFactory->createNevaOrder(
+9.Create Seva Order
+$createSevaOrder = $serviceFactory->createNevaOrder(
         string $productCode,
         string $distributorOrderNumber,
         string $phone,

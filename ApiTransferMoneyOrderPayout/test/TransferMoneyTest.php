@@ -3,8 +3,8 @@
 namespace Test;
 
 use PHPUnit\Framework\TestCase;
-use App\Services\VifoServiceFactory;
-use App\Services\VifoTransferMoney;
+use Modules\Services\VifoServiceFactory;
+use Modules\Services\VifoTransferMoney;
 
 class TransferMoneyTest extends TestCase
 {

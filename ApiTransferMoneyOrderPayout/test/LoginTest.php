@@ -2,7 +2,7 @@
 namespace Test;
 
 use PHPUnit\Framework\TestCase;
-use App\Services\VifoServiceFactory;
+use Modules\Services\VifoServiceFactory;
 
 class LoginTest extends TestCase
 {

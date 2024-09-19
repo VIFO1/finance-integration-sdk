@@ -1,7 +1,7 @@
 <?php
 namespace Test;
 
-use App\Services\VifoApproveTransferMoney;
+use Modules\Services\VifoApproveTransferMoney;
 use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\assertIsArray;

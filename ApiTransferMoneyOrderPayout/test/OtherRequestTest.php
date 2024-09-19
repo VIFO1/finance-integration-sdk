@@ -1,7 +1,7 @@
 <?php
 namespace Test;
 
-use App\Services\VIfoOtherRequest;
+use Modules\Services\VIfoOtherRequest;
 use PHPUnit\Framework\TestCase;
 
 class OtherRequestTest extends TestCase

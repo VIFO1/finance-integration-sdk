@@ -51,7 +51,7 @@ class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
         $errors  = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
 
         if (!empty($errors)) {
-            return ['errors' => $errors];
+            return 'errors'; $errors;
         }
 
         ksort($body);
