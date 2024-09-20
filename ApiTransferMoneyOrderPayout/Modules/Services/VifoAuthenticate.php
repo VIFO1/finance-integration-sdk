@@ -24,11 +24,11 @@ class VifoAuthenticate implements VifoAuthenticateInterface
     private function validateLoginInput(array $headers, string $username, string $password): array
     {
         $errors = [];
-        if (empty($username) || !is_string($username)) {
+        if (empty($username) || !is_string($username) || $username == '') {
             $errors[] = 'Invalid username';
         }
 
-        if (empty($password) || !is_string($password)) {
+        if (empty($password) || !is_string($password) || $password == '') {
             $errors[] = 'Invalid password';
         }
 

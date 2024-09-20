@@ -72,10 +72,9 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             return [
                 'status' => 'errors',
                 'message' => 'Authentication failed',
-                'status_code' => $response['status_code']
+                'status_code' => $response['status_code']? $response['status_code']: ''
             ];
         }
-
         return $response;
     }
 
@@ -179,27 +178,35 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     }
 
     public function createRevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        string $bankDetail,
+        string $qrType,
+        ?string $endDate
     ): array {
         $headers = $this->getAuthorizationHeaders('admin');
         $body = [
+            'fullname'=>$fullname,
+            'benefiary_bank_code'=>$beneficiaryBankCode,
+            'benefiary account no'=>$beneficiaryAccountNo,
             'product_code' => $productCode,
-            'phone' => $phone,
-            'fullname' => $fullname,
-            'final_amount' => $finalAmount,
             'distributor_order_number' => $distributorOrderNumber,
-            'benefiary_bank_code' => $beneficiaryBankCode,
-            'benefiary account no' => $beneficiaryAccountNo,
+            'phone' => $phone,
+            'email' => $email,
+            'address' => $address,
+            'final_amount' => $finalAmount,
             'comment' => $comment,
-            'source_account_no' => $sourceAccountNo,
+            'bank_detail' => $bankDetail,
+            'qr_type' => $qrType,
+            'end_date' => $endDate,
         ];
         $response = $this->createOrder->createOrder($headers, $body);
 
@@ -215,26 +222,34 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     }
 
     public function createSevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        string $bankDetail,
+        string $qrType,
+        ?string $endDate
     ): array {
         return $this->createRevaOrder(
+            $fullname,
+            $beneficiaryBankCode,
+            $beneficiaryAccountNo,
             $productCode,
             $distributorOrderNumber,
             $phone,
-            $fullname,
+            $email,
+            $address,
             $finalAmount,
-            $beneficiaryAccountNo,
-            $beneficiaryBankCode,
             $comment,
-            $sourceAccountNo
+            $bankDetail,
+            $qrType,
+            $endDate
         );
     }
 }
