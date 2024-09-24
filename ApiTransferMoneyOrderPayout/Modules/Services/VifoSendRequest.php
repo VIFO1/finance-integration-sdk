@@ -14,7 +14,7 @@ class VifoSendRequest implements VifoSendRequestInterface
     {
         if ($env == 'dev') {
             $this->baseUrl = 'https://sapi.vifo.vn';
-        } else if ($env == 'tsg') {
+        } else if ($env == 'stg') {
             $this->baseUrl = 'https://sapi.vifo.vn';
         } else if ($env == 'production') {
             $this->baseUrl = 'https://api.vifo.vn';

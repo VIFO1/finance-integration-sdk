@@ -22,12 +22,10 @@ class VifoOtherRequest implements VifoOtherRequestInterface
     private function validateOrderKey(array $headers, string $key): array
     {
         $errors = [];
-        if (empty($key)) {
-            $errors[] = 'Order key is required';
-        }
+     
 
-        if (!is_string($key)) {
-            $errors[] = 'Order key must be a string';
+        if (!is_string($key) || $key == '') {
+            $errors[] = 'Order key must be a string and cannot be empty';
         }
         if (empty($headers) || !is_array($headers)) {
             $errors[] = 'headers must be a non-empty array';

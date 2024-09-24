@@ -15,7 +15,8 @@ This PHP file uses services from `VifoServiceFactory` to perform banking, money 
 ```php
 use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
 2.Login
-$serviceFactory = new VifoServiceFactory('*');
+$environment = 'stg';
+$serviceFactory = new VifoServiceFactory($environment);
 $authenticateUser = $serviceFactory->performUserAuthentication(string $username, string $password);
 
 2.1 Methods for Token Setup
@@ -62,14 +63,14 @@ $createRevaOrder = $serviceFactory-> createRevaOrder(
         float $finalAmount,
         string $comment,
         string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        string $qrType = null,
+        string $endDate = null
     ): array;
 -Description: This method creates a new Reva order.
 -Returns: An array containing the response of the order creation.
 
 9.Create Seva Order
-$createSevaOrder = $serviceFactory->createNevaOrder(
+$createSevaOrder = $serviceFactory->createSevaOrder(
         string $fullname, 
         string $beneficiaryBankCode, 
         string $beneficiaryAccountNo, 
@@ -81,8 +82,8 @@ $createSevaOrder = $serviceFactory->createNevaOrder(
         float $finalAmount,
         string $comment,
         string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        string $qrType = null,
+        string $endDate = null
     ): array;
 -Description: This method creates a new Seva order.
 -Returns: An array containing the response of the order creation.

@@ -35,9 +35,9 @@ interface VifoServiceFactoryInterface
         string $address, 
         float $finalAmount,
         string $comment,
-        string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
 
     public function createSevaOrder(
@@ -51,8 +51,8 @@ interface VifoServiceFactoryInterface
         string $address, 
         float $finalAmount,
         string $comment,
-        string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
 }

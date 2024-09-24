@@ -19,6 +19,8 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     private $userToken;
     private $adminToken;
     private $createOrder;
+    private $orderReva;
+    private $orderSeva;
     public function __construct($env)
     {
         $this->env = $env;
@@ -29,7 +31,8 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $this->approveTransferMoney = new VifoApproveTransferMoney();
         $this->otherRequest = new VifoOtherRequest();
         $this->webhookHandler = new Webhook();
-        $this->createOrder = new VifoCreateOrder();
+        $this->orderReva = new VifoCreateRevaOrder();
+        $this->orderSeva = new VifoCreateSevaOrder();
         $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -156,11 +159,10 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         $headers = $this->getAuthorizationHeaders('user');
 
         $response = $this->otherRequest->checkOrderStatus($headers, $key);
-        if (empty($response['body']['data'])) {
+        if (isset($response['body'])) {
             return [
-                'status' => 'error',
-                'message' => 'Request failed due to errors: ' . $response['body']['message'],
-                'status_code' => $response['status_code'] ?? ''
+                'status_code' => $response['status_code'] ?? '',
+                'body' => $response['body'],
             ];
         }
         return $response;
@@ -188,15 +190,15 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         string $address, 
         float $finalAmount,
         string $comment,
-        string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array {
-        $headers = $this->getAuthorizationHeaders('admin');
+        $headers = $this->getAuthorizationHeaders('user');
         $body = [
             'fullname'=>$fullname,
             'benefiary_bank_code'=>$beneficiaryBankCode,
-            'benefiary account no'=>$beneficiaryAccountNo,
+            'benefiary_account_no'=>$beneficiaryAccountNo,
             'product_code' => $productCode,
             'distributor_order_number' => $distributorOrderNumber,
             'phone' => $phone,
@@ -205,17 +207,15 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'final_amount' => $finalAmount,
             'comment' => $comment,
             'bank_detail' => $bankDetail,
-            'qr_type' => $qrType,
-            'end_date' => $endDate,
+            'qr_type' => $qrType ? $qrType : null,
+            'end_date' => $endDate ? $endDate : null,
         ];
-        $response = $this->createOrder->createOrder($headers, $body);
+        $response = $this->orderReva->createRevaOrder($headers, $body);
 
-        if (isset($response['errors'])) {
+        if (isset($response['body'])) {
             return [
                 'status' => 'errors',
-                'message' => 'Order creation failed',
-                $response['errors'],
-                'status_code' => $response['status_code'] ?? ''
+               'body'=>$response['body']
             ];
         }
         return $response;
@@ -232,24 +232,35 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         string $address, 
         float $finalAmount,
         string $comment,
-        string $bankDetail,
-        string $qrType,
-        ?string $endDate
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array {
-        return $this->createRevaOrder(
-            $fullname,
-            $beneficiaryBankCode,
-            $beneficiaryAccountNo,
-            $productCode,
-            $distributorOrderNumber,
-            $phone,
-            $email,
-            $address,
-            $finalAmount,
-            $comment,
-            $bankDetail,
-            $qrType,
-            $endDate
-        );
+        $headers = $this->getAuthorizationHeaders('user');
+        $body = [
+            'fullname'=>$fullname,
+            'benefiary_bank_code'=>$beneficiaryBankCode,
+            'benefiary_account_no'=>$beneficiaryAccountNo,
+            'product_code' => $productCode,
+            'distributor_order_number' => $distributorOrderNumber,
+            'phone' => $phone,
+            'email' => $email,
+            'address' => $address,
+            'final_amount' => $finalAmount,
+            'comment' => $comment,
+            'bank_detail' => $bankDetail,
+            'qr_type' => $qrType ? $qrType : null,
+            'end_date' => $endDate ? $endDate : null,
+        ];
+        $response = $this->orderSeva->createSevaOrder($headers, $body);
+
+        if (isset($response['body'])) {
+            return [
+                'status' => 'errors',
+               'body'=>$response['body']
+            ];
+        }
+        return $response;
     }
+
 }
