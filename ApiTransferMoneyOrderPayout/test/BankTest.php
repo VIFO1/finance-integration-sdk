@@ -1,9 +1,9 @@
 <?php
 namespace Test;
 
-use App\Services\VifoBank;
+use Modules\Services\VifoBank;
 use PHPUnit\Framework\TestCase;
-use App\Services\VifoServiceFactory;
+use Modules\Services\VifoServiceFactory;
 
 class BankTest extends TestCase
 {

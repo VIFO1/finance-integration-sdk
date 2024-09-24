@@ -6,7 +6,7 @@ PHP SDK finance of VIFO
 This PHP file uses services from `VifoServiceFactory` to perform banking, money transfer and other requests. The following guide provides detailed information on how to use and understand the functions of the code.
 
 ## Requirements
-- **PHP**: Version 7.4 or higher.N
+- **PHP**: Version 7.4 or higher.
 - **Composer**: Installed and configured to load dependencies.
 
 
@@ -15,7 +15,8 @@ This PHP file uses services from `VifoServiceFactory` to perform banking, money 
 ```php
 use ApiTransferMoneyOrderPayout\Services\VifoServiceFactory;
 2.Login
-$serviceFactory = new VifoServiceFactory('*');
+$environment = 'stg';
+$serviceFactory = new VifoServiceFactory($environment);
 $authenticateUser = $serviceFactory->performUserAuthentication(string $username, string $password);
 
 2.1 Methods for Token Setup
@@ -51,26 +52,38 @@ $otherRequest = $serviceFactory ->processOtherRequest(string $key);
 
 8.Create Reva Order
 $createRevaOrder = $serviceFactory-> createRevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        string $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
+-Description: This method creates a new Reva order.
+-Returns: An array containing the response of the order creation.
 
-9.Create Neva Order
-$createNevaOrder = $serviceFactory->createNevaOrder(
+9.Create Seva Order
+$createSevaOrder = $serviceFactory->createSevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        string $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
+-Description: This method creates a new Seva order.
+-Returns: An array containing the response of the order creation.

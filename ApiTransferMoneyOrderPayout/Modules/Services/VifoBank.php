@@ -38,15 +38,15 @@ class VifoBank implements VifoBankInterface
      * @param array $headers The request headers, must be an array
      * @return array The response from the API.
      */
-    public function getBank(array $headers, array $body): array
+    public function getBank(array $headers): array
     {
+        $errors = [];
         $endpoint = '/v2/data/banks/napas';
-        $errors = $this->validateBody($headers, $body);
-        if (!empty($errors)) {
-            return ['errors' => $errors];
+        if (empty($headers) || !is_array($headers)) {
+           return $errors[] = 'headers must be a non-empty array';
         }
 
-        return $this->sendRequest->sendRequest('GET', $endpoint, $headers, $body);
+        return $this->sendRequest->sendRequest('GET', $endpoint, $headers,[]);
     }
 
     /**

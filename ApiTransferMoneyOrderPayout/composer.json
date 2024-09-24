@@ -5,8 +5,14 @@
     "autoload": {
         "psr-4": {
             "Modules\\Services\\": "Modules/Services/",
-             "Modules\\Interfaces\\": "Modules/Interfaces/"
-        }
+             "Modules\\Interfaces\\": "Modules/Interfaces/",
+             "Modules\\CommonFunctions\\": "Modules/CommonFunctions/"
+        },
+        "files": [
+            "Modules/CommonFunctions/generateSignature.php",
+            "Modules/CommonFunctions/validateCreateOrder.php",
+            "Modules/CommonFunctions/validateSignatureInputs.php"
+        ]
     },
    
     "minimum-stability": "stable",

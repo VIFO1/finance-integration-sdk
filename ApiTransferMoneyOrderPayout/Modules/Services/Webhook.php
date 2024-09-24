@@ -3,52 +3,21 @@
 namespace Modules\Services;
 
 use Modules\Interfaces\WebhookInterface;
+use function Modules\CommonFunctions\generateSignature;
+use function Modules\CommonFunctions\validateSignatureInputs;
 
 class Webhook implements WebhookInterface
 {
-    /**
-     * Validate the input parameters for a request.
-     *
-     * @param string $secretKey The secret key used for validation. Must be a non-empty string.
-     * @param string $timestamp The timestamp of the request. Must be a non-empty string.
-     * @param array $body The prepared body as an array.
-     * 
-     * @return array An array containing error messages if validation fails. Each error message describes a specific validation issue.
-     *               Returns an empty array if all input parameters are valid.
-     */
-    private function validate(string $secretKey, string $timestamp, array $body): array
+
+    public function createSignature(array $body, string $secretKey, string $timestamp): string
     {
-        $errors = [];
-        if (empty($secretKey)) {
-            $errors[] = 'Invalid secret key';
+        $errors  = validateSignatureInputs($secretKey, $timestamp, $body);
+
+        if (!empty($errors)) {
+            return 'errors'; $errors;
         }
 
-        if (empty($timestamp)) {
-            $errors[] = 'Invalid timestamp';
-        }
-
-        if (empty($body) || !is_array($body)) {
-            $errors[] = 'body must be a non-empty array';
-        }
-
-        return $errors;
-    }
-    /**
-     * Create the signature for validation.
-     *
-     * @param array $body The body of the request.
-     * @param string $secretKey The secret key.
-     * @param string $timestamp The timestamp.
-     * 
-     * @return string The generated HMAC SHA-256 signature.
-     */
-    private function createSignature(array $body, string $secretKey, string $timestamp): string
-    {
-        ksort($body);
-        $payload = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $signatureString = $timestamp . $payload;
-
-        return hash_hmac('sha256', $signatureString, $secretKey);
+        return generateSignature($body,$secretKey,$timestamp);
     }
     /**
      * Handle the validation of the request signature.
@@ -62,7 +31,7 @@ class Webhook implements WebhookInterface
      */
     public function handleSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool
     {
-        $errors = $this->validate($secretKey, $timestamp, $data);
+        $errors = validateSignatureInputs($secretKey, $timestamp, $data);
 
         if (!empty($errors)) {
             return ['errors' => $errors];

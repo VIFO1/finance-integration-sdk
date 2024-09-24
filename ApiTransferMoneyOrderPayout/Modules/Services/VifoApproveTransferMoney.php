@@ -1,8 +1,10 @@
 <?php
 
 namespace Modules\Services;
-
 use Modules\Interfaces\VifoApproveTransferMoneyInterface;
+use function Modules\CommonFunctions\generateSignature;
+use function Modules\CommonFunctions\validateSignatureInputs;
+
 
 class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
 {
@@ -12,53 +14,16 @@ class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
     {
         $this->sendRequest = new VifoSendRequest();
     }
-    /**
-     * Validate input for approving transfers.
-     *
-     * @param string $secretKey The secret key for authentication.
-     * @param string $timestamp The timestamp of the request.
-     * @param array $body The body of the request.
-     * @return array An array containing error messages if validation fails; otherwise, an empty array.
-     */
-    private function validateApproveTransfersInput(string $secretKey, string $timestamp, array $body): array
-    {
-        $errors = [];
-        if (empty($secretKey) || !is_string($secretKey)) {
-            $errors[] = 'Invalid secret key';
-        }
 
-        if (empty($timestamp)) {
-            $errors[] = 'Invalid timestamp';
-        }
-
-        if (empty($body) || !is_array($body)) {
-            $errors[] = 'The body must be a non-empty array.';
-        }
-
-        return $errors;
-    }
-    /**
-     * Create a signature for the request.
-     *
-     * @param array $body The body of the request.
-     * @param string $secretKey The secret key for authentication.
-     * @param string $timestamp The timestamp of the request.
-     *
-     * @return string The generated signature.
-     */
     public function createSignature(array $body, string $secretKey, string $timestamp): string
     {
-        $errors  = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
+        $errors  = validateSignatureInputs($secretKey, $timestamp, $body);
 
         if (!empty($errors)) {
-            return ['errors' => $errors];
+            return 'errors'; $errors;
         }
 
-        ksort($body);
-        $payload = json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $signatureString = $timestamp . $payload;
-
-        return hash_hmac('sha256', $signatureString, $secretKey);
+        return generateSignature($body,$secretKey,$timestamp);
     }
 
     /**
@@ -73,7 +38,7 @@ class VifoApproveTransferMoney implements VifoApproveTransferMoneyInterface
 
     public function approveTransfers(string $secretKey, string $timestamp, array $headers, array $body): array
     {
-        $errors  = $this->validateApproveTransfersInput($secretKey, $timestamp, $body);
+        $errors  = validateSignatureInputs($secretKey, $timestamp, $body);
 
         if (!empty($errors)) {
             return ['errors' => $errors];

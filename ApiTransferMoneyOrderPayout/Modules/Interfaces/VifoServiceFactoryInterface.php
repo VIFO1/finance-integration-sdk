@@ -25,26 +25,34 @@ interface VifoServiceFactoryInterface
     public function verifyWebhookSignature(array $data, string $requestSignature, string $secretKey, string $timestamp): bool;
 
     public function createRevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
 
-    public function createNevaOrder(
+    public function createSevaOrder(
+        string $fullname, 
+        string $beneficiaryBankCode, 
+        string $beneficiaryAccountNo, 
         string $productCode,
         string $distributorOrderNumber,
         string $phone,
-        string $fullname,
+        string $email,
+        string $address, 
         float $finalAmount,
-        string $beneficiaryAccountNo,
-        string $beneficiaryBankCode,
         string $comment,
-        string $sourceAccountNo
+        bool $bankDetail,
+        string $qrType = null,
+        string $endDate = null
     ): array;
 }
