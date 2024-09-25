@@ -183,7 +183,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         string $fullname, 
         string $beneficiaryBankCode, 
         string $beneficiaryAccountNo, 
-        string $productCode,
+        string $productCode = null,
         string $distributorOrderNumber,
         string $phone,
         string $email,
@@ -199,7 +199,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'fullname'=>$fullname,
             'benefiary_bank_code'=>$beneficiaryBankCode,
             'benefiary_account_no'=>$beneficiaryAccountNo,
-            'product_code' => $productCode,
+            'product_code' => $productCode? $productCode : 'REVAVF240101',
             'distributor_order_number' => $distributorOrderNumber,
             'phone' => $phone,
             'email' => $email,
@@ -211,7 +211,6 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'end_date' => $endDate ? $endDate : null,
         ];
         $response = $this->orderReva->createRevaOrder($headers, $body);
-
         if (isset($response['body'])) {
             return [
                 'status' => 'errors',
@@ -225,7 +224,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
         string $fullname, 
         string $beneficiaryBankCode, 
         string $beneficiaryAccountNo, 
-        string $productCode,
+        string $productCode = null,
         string $distributorOrderNumber,
         string $phone,
         string $email,
@@ -241,7 +240,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'fullname'=>$fullname,
             'benefiary_bank_code'=>$beneficiaryBankCode,
             'benefiary_account_no'=>$beneficiaryAccountNo,
-            'product_code' => $productCode,
+            'product_code' => $productCode? $productCode : 'SEVAVF240101',
             'distributor_order_number' => $distributorOrderNumber,
             'phone' => $phone,
             'email' => $email,
@@ -253,7 +252,6 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'end_date' => $endDate ? $endDate : null,
         ];
         $response = $this->orderSeva->createSevaOrder($headers, $body);
-
         if (isset($response['body'])) {
             return [
                 'status' => 'errors',
