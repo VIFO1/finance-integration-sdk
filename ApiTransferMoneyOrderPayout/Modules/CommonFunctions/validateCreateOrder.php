@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\CommonFunctions;
 
 /**
@@ -8,8 +7,6 @@ namespace Modules\CommonFunctions;
  * @param array $body must be an array
  * @return array The prepared body as an array.
  */
-
-
      function validateCreateOrder(array $headers, array $body): array
     {
         $errors = [];
