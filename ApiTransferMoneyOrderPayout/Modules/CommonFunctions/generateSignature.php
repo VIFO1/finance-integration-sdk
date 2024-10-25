@@ -17,5 +17,6 @@ namespace Modules\CommonFunctions;
 
         return hash_hmac('sha256', $signatureString, $secretKey);
     }
+
  
     
