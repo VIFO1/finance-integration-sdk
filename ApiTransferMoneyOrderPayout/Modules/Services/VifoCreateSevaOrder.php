@@ -11,7 +11,7 @@ class VifoCreateSevaOrder implements VifoCreateSevaOrderInterface
     {
         $this->sendRequest = new VifoSendRequest();
     }
-    public function validateSevaOrder(array $headers, array $body)
+    private function validateSevaOrder(array $headers, array $body): array
     {
 
         $errors = [];
