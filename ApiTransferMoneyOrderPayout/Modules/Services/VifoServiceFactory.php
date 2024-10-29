@@ -240,7 +240,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'benefiary_bank_code' => $beneficiaryBankCode,
             'benefiary_account_no' => $beneficiaryAccountNo,
             'comment' => $comment,
-            'source account no' => $sourceAccountNo
+            'source_account_no' => $sourceAccountNo
         ];
         $response = $this->orderSeva->createSevaOrder($headers, $body);
         if (isset($response['body'])) {
