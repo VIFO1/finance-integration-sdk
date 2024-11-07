@@ -75,7 +75,7 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             return [
                 'status' => 'errors',
                 'message' => 'Authentication failed',
-                'status_code' => $response['status_code']? $response['status_code']: ''
+                'status_code' => $response['status_code'] ? $response['status_code'] : ''
             ];
         }
         return $response;
@@ -180,14 +180,13 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     }
 
     public function createRevaOrder(
-        string $fullname, 
-        string $beneficiaryBankCode, 
-        string $beneficiaryAccountNo, 
-        string $productCode,
+        string $fullname,
+        string $benefiaryAccountName,
+        string $productCode = null,
         string $distributorOrderNumber,
-        string $phone,
+        string $phone = null,
         string $email,
-        string $address, 
+        string $address,
         float $finalAmount,
         string $comment,
         bool $bankDetail,
@@ -196,10 +195,9 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
     ): array {
         $headers = $this->getAuthorizationHeaders('user');
         $body = [
-            'fullname'=>$fullname,
-            'benefiary_bank_code'=>$beneficiaryBankCode,
-            'benefiary_account_no'=>$beneficiaryAccountNo,
-            'product_code' => $productCode,
+            'fullname' => $fullname,
+            'benefiary_account_name' => $benefiaryAccountName,
+            'product_code' => $productCode ? $productCode : 'REVAVF240101',
             'distributor_order_number' => $distributorOrderNumber,
             'phone' => $phone,
             'email' => $email,
@@ -211,56 +209,46 @@ class VifoServiceFactory  implements VifoServiceFactoryInterface
             'end_date' => $endDate ? $endDate : null,
         ];
         $response = $this->orderReva->createRevaOrder($headers, $body);
-
         if (isset($response['body'])) {
             return [
                 'status' => 'errors',
-               'body'=>$response['body']
+                'body' => $response['body']
             ];
         }
         return $response;
     }
 
     public function createSevaOrder(
-        string $fullname, 
-        string $beneficiaryBankCode, 
-        string $beneficiaryAccountNo, 
-        string $productCode,
-        string $distributorOrderNumber,
+        string $productCode = null,
         string $phone,
-        string $email,
-        string $address, 
+        string $fullname,
         float $finalAmount,
+        string $distributorOrderNumber,
+        string $beneficiaryBankCode,
+        string $beneficiaryAccountNo,
         string $comment,
-        bool $bankDetail,
-        string $qrType = null,
-        string $endDate = null
+        string $sourceAccountNo
+
     ): array {
         $headers = $this->getAuthorizationHeaders('user');
         $body = [
-            'fullname'=>$fullname,
-            'benefiary_bank_code'=>$beneficiaryBankCode,
-            'benefiary_account_no'=>$beneficiaryAccountNo,
-            'product_code' => $productCode,
-            'distributor_order_number' => $distributorOrderNumber,
+            'product_code' => $productCode ? $productCode : 'SEVAVF240101',
             'phone' => $phone,
-            'email' => $email,
-            'address' => $address,
+            'fullname' => $fullname,
             'final_amount' => $finalAmount,
+            'distributor_order_number' => $distributorOrderNumber,
+            'benefiary_bank_code' => $beneficiaryBankCode,
+            'benefiary_account_no' => $beneficiaryAccountNo,
             'comment' => $comment,
-            'bank_detail' => $bankDetail,
-            'qr_type' => $qrType ? $qrType : null,
-            'end_date' => $endDate ? $endDate : null,
+            'source_account_no' => $sourceAccountNo
         ];
         $response = $this->orderSeva->createSevaOrder($headers, $body);
-
         if (isset($response['body'])) {
             return [
                 'status' => 'errors',
-               'body'=>$response['body']
+                'body' => $response['body']
             ];
         }
         return $response;
     }
-
 }

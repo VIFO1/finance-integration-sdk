@@ -53,16 +53,15 @@ $otherRequest = $serviceFactory ->processOtherRequest(string $key);
 8.Create Reva Order
 $createRevaOrder = $serviceFactory-> createRevaOrder(
         string $fullname, 
-        string $beneficiaryBankCode, 
-        string $beneficiaryAccountNo, 
-        string $productCode,
+        string $benefiaryAccountName,
+        string $productCode = null,
         string $distributorOrderNumber,
         string $phone,
         string $email,
         string $address, 
         float $finalAmount,
         string $comment,
-        string $bankDetail,
+        bool $bankDetail,
         string $qrType = null,
         string $endDate = null
     ): array;
@@ -71,19 +70,15 @@ $createRevaOrder = $serviceFactory-> createRevaOrder(
 
 9.Create Seva Order
 $createSevaOrder = $serviceFactory->createSevaOrder(
-        string $fullname, 
+        string $productCode = null, 
+        string $phone, 
+        string $fullname,
+        float $finalAmount, 
+        string $distributorOrderNumber, 
         string $beneficiaryBankCode, 
-        string $beneficiaryAccountNo, 
-        string $productCode,
-        string $distributorOrderNumber,
-        string $phone,
-        string $email,
-        string $address, 
-        float $finalAmount,
+        string $beneficiaryAccountNo,
         string $comment,
-        string $bankDetail,
-        string $qrType = null,
-        string $endDate = null
+        string $sourceAccountNo
     ): array;
 -Description: This method creates a new Seva order.
 -Returns: An array containing the response of the order creation.

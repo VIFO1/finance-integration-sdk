@@ -10,7 +10,6 @@
         },
         "files": [
             "Modules/CommonFunctions/generateSignature.php",
-            "Modules/CommonFunctions/validateCreateOrder.php",
             "Modules/CommonFunctions/validateSignatureInputs.php"
         ]
     },

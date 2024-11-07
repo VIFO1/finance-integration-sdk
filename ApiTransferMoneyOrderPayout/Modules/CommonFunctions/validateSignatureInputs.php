@@ -3,7 +3,6 @@ namespace Modules\CommonFunctions;
 
 /**
  * Validate input for approving transfers.
- *
  * @param string $secretKey The secret key for authentication.
  * @param string $timestamp The timestamp of the request.
  * @param array $body The body of the request.
