@@ -9,8 +9,8 @@
              "Modules\\CommonFunctions\\": "Modules/CommonFunctions/"
         },
         "files": [
-            "Modules/CommonFunctions/generateSignature.php",
-            "Modules/CommonFunctions/validateSignatureInputs.php"
+          "Modules/CommonFunctions/generateSignature.php",
+          "Modules/CommonFunctions/validateSignatureInputs.php"
         ]
     },
    
